@@ -1,23 +1,36 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema } from '@/utils/validationSchemas';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '@/store/slices/authSlice';
 import axiosInstance from '@/utils/axiosInstance';
 import toast from 'react-hot-toast';
+import { LoginRequest } from '@/types/auth';
+
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const handleLogin = async () => {
-    try {
-      const response = await axiosInstance.post('/auth/login', { email, password });
+  // 🛠️ Configuramos React Hook Form con Zod
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginRequest>({
+    resolver: zodResolver(loginSchema),
+  });
 
-      const token = response.data; // El backend debe devolver el token como string
+  // 🛠️ Función de Login
+  const onSubmit = async (data: LoginRequest) => {
+    try {
+      const response = await axiosInstance.post('/auth/login', data);
+
+      const token = response.data;
       dispatch(setCredentials({ token }));
       localStorage.setItem('token', token);
 
@@ -43,20 +56,22 @@ const LoginPage = () => {
         <p className="text-gray-300 text-center mb-6">
           Manage your gym with ease. Enter your details to continue.
         </p>
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Email Field */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-200">
               Email Address
             </label>
             <input
+              {...register('email')}
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 bg-gray-900 text-white rounded-md border border-gray-600 focus:ring-2 focus:ring-red-600 focus:outline-none"
               placeholder="Enter your email"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           {/* Password Field */}
@@ -65,19 +80,20 @@ const LoginPage = () => {
               Password
             </label>
             <input
+              {...register('password')}
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 bg-gray-900 text-white rounded-md border border-gray-600 focus:ring-2 focus:ring-red-600 focus:outline-none"
               placeholder="Enter your password"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+            )}
           </div>
 
           {/* Login Button */}
           <button
-            type="button"
-            onClick={handleLogin}
+            type="submit"
             className="w-full py-3 bg-red-600 text-white rounded-md font-semibold text-lg transition-transform duration-300 hover:bg-red-700 hover:scale-105"
           >
             Sign In
