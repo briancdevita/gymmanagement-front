@@ -1,22 +1,21 @@
-'use client';
-
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema } from '@/utils/validationSchemas';
-import { useDispatch } from 'react-redux';
-import { setCredentials } from '@/store/slices/authSlice';
-import axiosInstance from '@/utils/axiosInstance';
-import toast from 'react-hot-toast';
-import { LoginRequest } from '@/types/auth';
-
+"use client";
+import React from "react";
+import { Box, Button, TextField, Typography, Card } from "@mui/material";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "@/utils/validationSchemas";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "@/store/slices/authSlice";
+import axiosInstance from "@/utils/axiosInstance";
+import toast from "react-hot-toast";
+import { LoginRequest } from "@/types/auth";
 
 const LoginPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // 🛠️ Configuramos React Hook Form con Zod
+  // Configuración de React Hook Form con Zod
   const {
     register,
     handleSubmit,
@@ -25,90 +24,137 @@ const LoginPage = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  // 🛠️ Función de Login
+  // Función para manejar el envío del formulario
   const onSubmit = async (data: LoginRequest) => {
     try {
-      const response = await axiosInstance.post('/auth/login', data);
+      const response = await axiosInstance.post("/auth/login", data);
 
       const token = response.data;
       dispatch(setCredentials({ token }));
-      localStorage.setItem('token', token);
+      localStorage.setItem("token", token);
 
-      toast.success('Login successful! Redirecting...', { icon: '🚀' });
-      setTimeout(() => router.push('/clients'), 1500);
+      toast.success("Login successful! Redirecting...");
+      setTimeout(() => router.push("/clients"), 1500);
     } catch (error) {
-      console.error('Login failed:', error);
-      toast.error('Invalid credentials. Please try again.');
+      toast.error("Invalid credentials. Please try again.");
     }
   };
 
   return (
-    <div
-      className="flex items-center justify-center min-h-screen bg-cover bg-center"
-      style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+        background: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)),
+                     url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
-      <div className="w-full max-w-md bg-black bg-opacity-50 backdrop-blur-md p-8 rounded-lg shadow-xl border border-gray-700">
-        <h1 className="text-4xl font-extrabold text-center text-red-500 mb-6">
+      <Card
+        sx={{
+          padding: 4,
+          maxWidth: 400,
+          backgroundColor: "rgba(0, 0, 0, 0.8)",
+          color: "#fff",
+          borderRadius: 3,
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.5)",
+        }}
+      >
+        <Typography
+          variant="h4"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: "bold", color: "#d32f2f" }}
+        >
           Welcome Back
-        </h1>
-        <p className="text-gray-300 text-center mb-6">
+        </Typography>
+        <Typography
+          variant="body1"
+          align="center"
+          gutterBottom
+          sx={{ marginBottom: 3, color: "#b0bec5" }}
+        >
           Manage your gym with ease. Enter your details to continue.
-        </p>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Email Field */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-200">
-              Email Address
-            </label>
-            <input
-              {...register('email')}
-              type="email"
-              id="email"
-              className="w-full px-4 py-3 bg-gray-900 text-white rounded-md border border-gray-600 focus:ring-2 focus:ring-red-600 focus:outline-none"
-              placeholder="Enter your email"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* Password Field */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-200">
-              Password
-            </label>
-            <input
-              {...register('password')}
-              type="password"
-              id="password"
-              className="w-full px-4 py-3 bg-gray-900 text-white rounded-md border border-gray-600 focus:ring-2 focus:ring-red-600 focus:outline-none"
-              placeholder="Enter your password"
-            />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-            )}
-          </div>
-
-          {/* Login Button */}
-          <button
+        </Typography>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Campo de Email */}
+          <TextField
+            {...register("email")}
+            fullWidth
+            label="Email Address"
+            variant="outlined"
+            margin="normal"
+            error={!!errors.email}
+            helperText={errors.email?.message}
+            InputLabelProps={{ style: { color: "#b0bec5" } }}
+            InputProps={{
+              style: {
+                color: "#fff",
+                backgroundColor: "#1e1e1e",
+                borderRadius: 5,
+              },
+            }}
+          />
+          {/* Campo de Contraseña */}
+          <TextField
+            {...register("password")}
+            fullWidth
+            label="Password"
+            type="password"
+            variant="outlined"
+            margin="normal"
+            error={!!errors.password}
+            helperText={errors.password?.message}
+            InputLabelProps={{ style: { color: "#b0bec5" } }}
+            InputProps={{
+              style: {
+                color: "#fff",
+                backgroundColor: "#1e1e1e",
+                borderRadius: 5,
+              },
+            }}
+          />
+          {/* Botón de Inicio de Sesión */}
+          <Button
             type="submit"
-            className="w-full py-3 bg-red-600 text-white rounded-md font-semibold text-lg transition-transform duration-300 hover:bg-red-700 hover:scale-105"
+            fullWidth
+            variant="contained"
+            sx={{
+              backgroundColor: "#d32f2f",
+              color: "#fff",
+              padding: 1.5,
+              fontWeight: "bold",
+              marginTop: 2,
+              "&:hover": {
+                backgroundColor: "#b71c1c",
+              },
+            }}
           >
             Sign In
-          </button>
-
-          {/* Forgot Password */}
-          <p className="text-center text-gray-400 text-sm">
-            Forgot your password?{' '}
-            <a href="#" className="text-red-500 hover:underline">
-              Reset here
-            </a>
-          </p>
+          </Button>
         </form>
-      </div>
-    </div>
+        {/* Enlace de Recuperar Contraseña */}
+        <Typography
+          variant="body2"
+          align="center"
+          sx={{ marginTop: 2, color: "#b0bec5" }}
+        >
+          Forgot your password?{" "}
+          <span
+            style={{
+              color: "#d32f2f",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            Reset here
+          </span>
+        </Typography>
+      </Card>
+    </Box>
   );
 };
 
