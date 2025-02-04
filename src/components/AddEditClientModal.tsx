@@ -6,18 +6,31 @@ import {
   TextField,
   Button,
   Grid,
+  Divider,
+  InputAdornment,
+  MenuItem,
+  FormControl,
 } from "@mui/material";
 import { Client } from "@/types/client";
 import { useForm } from "react-hook-form";
+import {
+  Person,
+  Email,
+  CalendarToday,
+  Work,
+  EventAvailable,
+  EventBusy,
+} from "@mui/icons-material";
+import { Status } from "@/types/status";
 
 interface AddEditClientModalProps {
   open: boolean;
   onClose: () => void;
-  client: Client | null; // Cliente seleccionado o null si es nuevo
-  onSave: (client: Client) => void; // Función para guardar cliente
+  client: Client | null;
+  onSave: (client: Client) => void;
 }
 
-
+const membershipStatusOptions: Status[] = [];
 
 const AddEditClientModal: React.FC<AddEditClientModalProps> = ({
   open,
@@ -25,137 +38,204 @@ const AddEditClientModal: React.FC<AddEditClientModalProps> = ({
   client,
   onSave,
 }) => {
-  const { register, handleSubmit, reset } = useForm<Client>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Client>({
+    mode: "onBlur",
+  });
 
   useEffect(() => {
-    if (client) {
-      reset(client); 
-    } else {
-      reset({
-        id: undefined,
-        firstName: "",
-        lastName: "",
-        email: "",
-        registrationDate: "",
-        birthDate: "",
-        membershipStatus: "",
-        startDate: "",
-        endDate: "",
-      }); 
-    }
+    client ? reset(client) : reset();
   }, [client, reset]);
-  
 
   const onSubmit = (data: Client) => {
-    onSave(data); // Llama a la función onSave con los datos del formulario
-    onClose(); // Cierra el modal
+    onSave(data);
+    onClose();
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={onClose} disableEscapeKeyDown>
       <Box
         sx={{
           position: "absolute",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 500,
+          width: { xs: "90%", sm: 600 },
           bgcolor: "background.paper",
           boxShadow: 24,
           p: 4,
-          borderRadius: 2,
+          borderRadius: 3,
+          "& .MuiInputBase-root": { borderRadius: 2 },
         }}
       >
-        <Typography variant="h6" mb={2}>
-          {client ? "Edit Client" : "Add Client"}
+        <Typography variant="h5" component="div" sx={{ fontWeight: 600, mb: 2 }}>
+          {client ? "Edit Client" : "New Client Registration"}
+          <Divider sx={{ mt: 1, borderColor: "divider" }} />
         </Typography>
+
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="First Name"
-                {...register("firstName")}
-                variant="outlined"
+                {...register("firstName", { required: "Required field" })}
+                error={!!errors.firstName}
+                helperText={errors.firstName?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Person fontSize="small" color="action" />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
-            <Grid item xs={6}>
+
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Last Name"
-                {...register("lastName")}
-                variant="outlined"
+                {...register("lastName", { required: "Required field" })}
+                error={!!errors.lastName}
+                helperText={errors.lastName?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Person fontSize="small" color="action" />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
+
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Email"
-                {...register("email")}
-                variant="outlined"
                 type="email"
+                {...register("email", {
+                  required: "Required field",
+                  pattern: {
+                    value: /^\S+@\S+$/i,
+                    message: "Invalid email format",
+                  },
+                })}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email fontSize="small" color="action" />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
-            <Grid item xs={6}>
+
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Birth Date"
-                {...register("birthDate")}
-                variant="outlined"
                 type="date"
+                {...register("birthDate", { required: "Required field" })}
+                error={!!errors.birthDate}
+                helperText={errors.birthDate?.message}
                 InputLabelProps={{ shrink: true }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CalendarToday fontSize="small" color="action" />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Registration Date"
-                {...register("registrationDate")}
-                variant="outlined"
-                type="date"
-                InputLabelProps={{ shrink: true }}
-              />
+
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <TextField
+                  label="Membership Status"
+                  {...register("membershipStatus", { required: "Required field" })}
+                  error={!!errors.membershipStatus}
+                  helperText={errors.membershipStatus?.message}
+                  select
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Work fontSize="small" color="action" />
+                      </InputAdornment>
+                    ),
+                  }}
+                >
+                  {membershipStatusOptions.map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </FormControl>
             </Grid>
-            <Grid item xs={6}>
+
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Start Date"
-                {...register("startDate")}
-                variant="outlined"
                 type="date"
+                {...register("startDate", { required: "Required field" })}
+                error={!!errors.startDate}
+                helperText={errors.startDate?.message}
                 InputLabelProps={{ shrink: true }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EventAvailable fontSize="small" color="action" />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
-            <Grid item xs={6}>
+
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="End Date"
-                {...register("endDate")}
-                variant="outlined"
                 type="date"
+                {...register("endDate", { required: "Required field" })}
+                error={!!errors.endDate}
+                helperText={errors.endDate?.message}
                 InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Membership Status"
-                {...register("membershipStatus")}
-                variant="outlined"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EventBusy fontSize="small" color="action" />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
           </Grid>
-          <Box display="flex" justifyContent="flex-end" mt={3}>
+
+          <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
             <Button
               onClick={onClose}
               variant="outlined"
               color="secondary"
-              sx={{ marginRight: 2 }}
+              sx={{ borderRadius: 2, px: 4 }}
             >
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary">
-              Save
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ borderRadius: 2, px: 4 }}
+            >
+              Save Client
             </Button>
           </Box>
         </form>

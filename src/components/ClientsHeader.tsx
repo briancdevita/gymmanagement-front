@@ -8,18 +8,36 @@ interface ClientsHeaderProps {
 
 const ClientsHeader: React.FC<ClientsHeaderProps> = ({ search, setSearch }) => {
   return (
-    <AppBar position="static" sx={{ backgroundColor: "black", boxShadow: 2 }}>
-      <Toolbar sx={{ justifyContent: "space-between", px: { xs: 2, sm: 6 } }}>
-        {/* Título */}
+    <AppBar 
+      position="static" 
+      sx={{ 
+        backgroundColor: "white", 
+        boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+        borderBottom: "1px solid #e2e8f0",
+        color: "text.primary"
+      }}
+    >
+      <Toolbar sx={{ 
+        justifyContent: "space-between", 
+        px: { xs: 2, sm: 6 },
+        minHeight: "80px!important"
+      }}>
+        {/* Título con gradiente */}
         <Typography
           variant="h4"
-          sx={{ fontWeight: "bold", color: "red", flexGrow: 1 }}
+          sx={{
+            fontWeight: 700,
+            flexGrow: 1,
+            background: "linear-gradient(45deg, #6b8cff 0%, #a063ff 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent"
+          }}
         >
           Clients
         </Typography>
 
         {/* Búsqueda y Botón */}
-        <Box display="flex" gap={2}>
+        <Box display="flex" gap={2} alignItems="center">
           {/* Campo de búsqueda */}
           <TextField
             value={search}
@@ -28,12 +46,20 @@ const ClientsHeader: React.FC<ClientsHeaderProps> = ({ search, setSearch }) => {
             variant="outlined"
             size="small"
             sx={{
-              input: { color: "white", backgroundColor: "gray", borderRadius: 1 },
+              width: 240,
               "& .MuiOutlinedInput-root": {
-                "& fieldset": { borderColor: "gray" },
-                "&:hover fieldset": { borderColor: "red" },
-                "&.Mui-focused fieldset": { borderColor: "red" },
+                borderRadius: 2,
+                backgroundColor: "#f8fafc",
+                "& fieldset": { borderColor: "#e2e8f0" },
+                "&:hover fieldset": { borderColor: "#a063ff" },
+                "&.Mui-focused fieldset": { 
+                  borderColor: "#6b8cff",
+                  boxShadow: "0 0 0 2px rgba(107, 140, 255, 0.2)"
+                },
               },
+            }}
+            InputProps={{
+              startAdornment: <Search sx={{ color: "#94a3b8", mr: 1 }} />
             }}
           />
 
@@ -41,15 +67,20 @@ const ClientsHeader: React.FC<ClientsHeaderProps> = ({ search, setSearch }) => {
           <Button
             variant="contained"
             sx={{
-              backgroundColor: "red",
+              borderRadius: 2,
+              px: 3,
+              py: 1,
+              background: "linear-gradient(45deg, #6b8cff 0%, #a063ff 100%)",
               color: "white",
-              fontWeight: "bold",
+              fontWeight: 600,
+              textTransform: "none",
               "&:hover": {
-                backgroundColor: "darkred",
-              },
+                opacity: 0.9,
+                background: "linear-gradient(45deg, #5a7be0 0%, #8a52d9 100%)"
+              }
             }}
           >
-            + Add Client
+            + New Client
           </Button>
         </Box>
       </Toolbar>

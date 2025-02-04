@@ -7,26 +7,31 @@ import { RootState, AppDispatch } from "@/store";
 import { Client } from "@/types/client";
 
 import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  Chip,
+  Avatar,
+  IconButton,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Typography,
-  Button,
-  TextField,
-  Box,
-  Chip,
+  Tooltip,
+  CircularProgress,
 } from "@mui/material";
-import { Edit, Delete, Search } from "@mui/icons-material";
+import { Edit, Delete, Search, PersonAdd } from "@mui/icons-material";
 import DashboardLayout from "@/components/DashboardLayout";
 import Swal from "sweetalert2";
 import AddEditClientModal from "@/components/AddEditClientModal";
 import toast from "react-hot-toast";
 import { createClient, deleteClient, updateClinet } from "@/services/clientService";
 import Footer from "@/components/Footer";
+import { format } from "date-fns";
 
 const ClientsPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -54,28 +59,27 @@ const ClientsPage = () => {
 
   const handleDeleteClient = async (clientId: number) => {
     const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "This action cannot be undone!",
+      title: "Confirm Delete",
+      text: "Are you sure you want to delete this client?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d32f2f",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
     });
 
     if (result.isConfirmed) {
       await deleteClient(clientId);
-      toast.success(`Client with ID: ${clientId} deleted successfully!`);
+      toast.success("Client deleted successfully!");
       dispatch(getClients());
     }
   };
 
-  const handleSaveClient = async  (client: Client) => {
-
-
+  const handleSaveClient = async (client: Client) => {
     if (client.id) {
       await updateClinet(client);
-      toast.success("Client edited successfully!");
+      toast.success("Client updated successfully!");
     } else {
       await createClient(client);
       toast.success("Client added successfully!");
@@ -84,127 +88,178 @@ const ClientsPage = () => {
     setModalOpen(false);
   };
 
-  const openModal = (client?: Client) => {
-    if (client) {
-      setSelectedClient(client); // Si hay cliente, lo selecciona para editar
-    } else {
-      setSelectedClient(null); // Si no hay cliente, limpiamos el seleccionado
-    }
-    setModalOpen(true);
-  };
-  
-  const closeModal = () => {
-    setSelectedClient(null);
-    setModalOpen(false);
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "-";
+    return format(new Date(dateString), "MMM dd, yyyy");
   };
 
   return (
     <>
     <DashboardLayout>
-      <Box sx={{ marginBottom: 3 }}>
-        <Typography variant="h4" color="primary" textAlign={'center'} fontWeight="bold" gutterBottom>
-          Clients List
-        </Typography>
-        <Box display="flex" gap={2} alignItems="center" marginBottom={2}>
-          <TextField
-            variant="outlined"
-            placeholder="Search clients..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            InputProps={{
-              startAdornment: <Search sx={{ marginRight: 1 }} />,
-            }}
-            sx={{
-              flex: 1,
-              backgroundColor: "white",
-              borderRadius: 1,
-              "& .MuiOutlinedInput-root": { borderRadius: 2 },
-            }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => openModal()}
-          >
-            + Add Client
-          </Button>
+      <Box sx={{ p: 4,  }}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          mb: 4,
+          flexWrap: 'wrap',
+          gap: 2
+        }}>
+          <Box>
+            <Typography variant="h4" fontWeight={700} gutterBottom>
+              Client Management
+            </Typography>
+            <Chip 
+              label={`${filteredClients.length} clients found`}
+              color="primary"
+              variant="outlined"
+              size="small"
+            />
+          </Box>
+          
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <TextField
+              variant="outlined"
+              placeholder="Search clients..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              InputProps={{
+                startAdornment: <Search sx={{ color: 'action.active', mr: 1 }} />,
+                sx: { borderRadius: 2 }
+              }}
+              size="small"
+            />
+            <Button
+              variant="contained"
+              startIcon={<PersonAdd />}
+              onClick={() => setModalOpen(true)}
+              sx={{ borderRadius: 2 }}
+            >
+              New Client
+            </Button>
+          </Box>
         </Box>
+
+        {loading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+            <CircularProgress />
+          </Box>
+        )}
+
+        {error && (
+          <Box sx={{ p: 2, backgroundColor: 'error.light', borderRadius: 2 }}>
+            <Typography color="error">{error}</Typography>
+          </Box>
+        )}
+
+        <Paper sx={{ 
+          borderRadius: 3,
+          overflow: 'hidden',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.08)'
+        }}>
+          <TableContainer>
+            <Table>
+              <TableHead sx={{ backgroundColor: 'primary.main' }}>
+                <TableRow>
+                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Client</TableCell>
+                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Email</TableCell>
+                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Membership</TableCell>
+                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Start Date</TableCell>
+                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>End Date</TableCell>
+                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Status</TableCell>
+                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }} align="center">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredClients.map((client) => (
+                  <TableRow 
+                    key={client.id}
+                    hover
+                    sx={{ 
+                      '&:last-child td': { borderBottom: 0 },
+                      '&:hover': { backgroundColor: 'action.hover' }
+                    }}
+                  >
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Avatar sx={{ bgcolor: 'primary.main' }}>
+                          {client.firstName[0]}{client.lastName[0]}
+                        </Avatar>
+                        <Box>
+                          <Typography fontWeight={500}>
+                            {client.firstName} {client.lastName}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {formatDate(client.birthDate)}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell>{client.email}</TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={client.membershipType || 'Standard'} 
+                        size="small" 
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>{formatDate(client.startDate)}</TableCell>
+                    <TableCell>{formatDate(client.endDate)}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={client.membershipStatus}
+                        color={client.membershipStatus === "ACTIVE" ? "success" : "error"}
+                        sx={{ 
+                          borderRadius: 1,
+                          fontWeight: 500,
+                          textTransform: 'uppercase'
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align="center">
+                      <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                        <Tooltip title="Edit">
+                          <IconButton
+                            color="primary"
+                            onClick={() => {
+                              setSelectedClient(client);
+                              setModalOpen(true);
+                            }}
+                          >
+                            <Edit fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            color="error"
+                            onClick={() => handleDeleteClient(client.id)}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+
+        <AddEditClientModal
+          open={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedClient(null);
+          }}
+          client={selectedClient}
+          onSave={handleSaveClient}
+        />
       </Box>
-
-      {loading && <Typography>Loading clients...</Typography>}
-      {error && <Typography color="error">{error}</Typography>}
-
-      <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2 }}>
-        <Table>
-          <TableHead sx={{ backgroundColor: "#021126" }}>
-            <TableRow>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>ID</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>First Name</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Last Name</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Email</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Birth Date</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Registration Date</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Start Date</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>End Date</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Status</TableCell>
-              <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredClients.map((client) => (
-              <TableRow  key={client.id}>
-                <TableCell>{client.id}</TableCell>
-                <TableCell>{client.firstName}</TableCell>
-                <TableCell>{client.lastName}</TableCell>
-                <TableCell>{client.email}</TableCell>
-                <TableCell>{client.birthDate}</TableCell>
-                <TableCell>{client.registrationDate}</TableCell>
-                <TableCell>{client.startDate}</TableCell>
-                <TableCell>{client.endDate}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={client.membershipStatus}
-                    color={client.membershipStatus === "ACTIVE" ? "success" : "error"}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Box display="flex" gap={1}>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      color="primary"
-                      startIcon={<Edit />}
-                      onClick={() => openModal(client)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      color="error"
-                      startIcon={<Delete />}
-                      onClick={() => handleDeleteClient(client.id)}
-                    >
-                      Delete
-                    </Button>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <AddEditClientModal
-        open={modalOpen}
-        onClose={closeModal}
-        client={selectedClient}
-        onSave={handleSaveClient}
-      />
+     
     </DashboardLayout>
     <Footer />
     </>
-    
   );
 };
 
