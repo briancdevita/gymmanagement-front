@@ -15,7 +15,6 @@ export const fetchTrainers= async (): Promise<Trainer[]> => {
 
 
 export const updateTrainer= async (trainer: Trainer): Promise<Trainer> => {
-
   try {
     const response = await axiosInstance.put(`/trainers/${trainer.id}`, trainer);
     return response.data;

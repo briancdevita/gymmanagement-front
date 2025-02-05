@@ -13,6 +13,7 @@ export interface WorkoutClass {
     trainer: {
       name: string;
       specialty: string;
+      avatar: string;
     };
     imageUrl: string
 

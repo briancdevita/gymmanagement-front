@@ -41,12 +41,16 @@ const AddEditTrainerModal: React.FC<AddEditTrainerModalProps> = ({
 
   useEffect(() => {
     if (trainer) {
-      console.log("Trainer data on edit:", trainer); // <-- Verificar si trainer.imageUrl llega correctamente
-    //   reset(trainer);
       setTimeout(() => reset({ ...trainer, imageUrl: trainer.avatar || "" }), 0); // Asegura que imageUrl se establezca bien
 
     } else {
-      reset();
+      reset({
+        id: "",
+        name: "",
+        email: "",
+        specialty: "",
+        avatar: "", 
+      });
     }
   }, [trainer, reset]);
   
@@ -156,15 +160,15 @@ const AddEditTrainerModal: React.FC<AddEditTrainerModalProps> = ({
               <TextField
                 fullWidth
                 label="Profile Image URL"
-                {...register("imageUrl", {
+                {...register("avatar", {
                   required: "Required field",
                   pattern: {
                     value: /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i,
                     message: "Invalid URL format",
                   },
                 })}
-                error={!!errors.imageUrl}
-                helperText={errors.imageUrl?.message}
+                error={!!errors.avatar}
+                helperText={errors.avatar?.message}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">

@@ -169,7 +169,6 @@ const WorkoutClassPage = () => {
   const { workoutClass, loading, error } = useSelector((state: RootState) => state.workoutClass);
   const router = useRouter();
 
-  console.log(workoutClass)
  
 
   return (
