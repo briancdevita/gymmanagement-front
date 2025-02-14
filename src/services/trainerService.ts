@@ -43,3 +43,15 @@ export const deleteTrainer = async (trainerId: number): Promise<void> => {
     throw error;
   }
 }
+
+
+export const getOneTrainer = async (trainerId: number): Promise<Trainer> => {
+  try {
+    const response = await axiosInstance.get(`/trainers/${trainerId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching trainer:', error);
+    throw error;
+}
+
+}

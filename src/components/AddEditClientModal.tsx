@@ -21,7 +21,6 @@ import {
   EventAvailable,
   EventBusy,
 } from "@mui/icons-material";
-import { Status } from "@/types/status";
 
 interface AddEditClientModalProps {
   open: boolean;
@@ -30,7 +29,11 @@ interface AddEditClientModalProps {
   onSave: (client: Client) => void;
 }
 
-const membershipStatusOptions: Status[] = [];
+export const membershipStatusOptions: string[] = [
+  "ACTIVE",
+  "PENDING",
+  "CANCELL"
+];
 
 const AddEditClientModal: React.FC<AddEditClientModalProps> = ({
   open,
@@ -45,10 +48,23 @@ const AddEditClientModal: React.FC<AddEditClientModalProps> = ({
     formState: { errors },
   } = useForm<Client>({
     mode: "onBlur",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      birthDate: "",
+      membershipStatus: membershipStatusOptions[0], 
+      startDate: "",
+      endDate: "",
+    },
   });
 
   useEffect(() => {
-    client ? reset(client) : reset();
+    if (client) {
+      reset(client);
+    } else {
+      reset();
+    }
   }, [client, reset]);
 
   const onSubmit = (data: Client) => {

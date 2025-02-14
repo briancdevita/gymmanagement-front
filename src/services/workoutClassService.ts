@@ -15,8 +15,7 @@ export const fetchWorkoutClass= async (): Promise<WorkoutClass[]> => {
 };
 
 
-export const updateTrainer= async (workoutClass: WorkoutClass): Promise<WorkoutClass> => {
-
+export const updateWorkoutClass= async (workoutClass: WorkoutClass): Promise<WorkoutClass> => {
   try {
     const response = await axiosInstance.put(`/workoutclass/${workoutClass.id}`, workoutClass);
     return response.data;

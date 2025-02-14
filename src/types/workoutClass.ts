@@ -10,11 +10,7 @@ export interface WorkoutClass {
     status: string;
     maxCapacity: number;
     registeredParticipants: number;
-    trainer: {
-      name: string;
-      specialty: string;
-      avatar: string;
-    };
+    trainerId:number;
     imageUrl: string
 
 }
