@@ -35,6 +35,7 @@ const AddEditTrainerModal: React.FC<AddEditTrainerModalProps> = ({
     formState: { errors },
   } = useForm<Trainer>({
     mode: "onBlur",
+    
   });
   const imageUrl = watch("avatar");
 
@@ -183,8 +184,8 @@ const AddEditTrainerModal: React.FC<AddEditTrainerModalProps> = ({
           <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
             <Button
               onClick={onClose}
-              variant="outlined"
-              color="secondary"
+              variant="contained"
+              color="error"
               sx={{ borderRadius: 2, px: 4 }}
             >
               Cancel

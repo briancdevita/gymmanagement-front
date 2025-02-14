@@ -21,7 +21,6 @@ import {
   PersonAddAlt1, 
 
 } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
@@ -39,6 +38,7 @@ const TrainersPage = () => {
     useEffect(() => {
       dispatch(getTrainers());
     }, [dispatch]);
+    
   const { trainers, loading, error } = useSelector((state: RootState) => state.trainers);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTrainer, setSelectedTrainer] = useState<Trainer | null>(null);
@@ -58,7 +58,7 @@ const TrainersPage = () => {
       );
     }, [search, trainers]);
 
-  const router = useRouter();
+
 
   const handleDeleteTrainer = async (clientId: number) => {
     const result = await Swal.fire({
@@ -105,7 +105,8 @@ const TrainersPage = () => {
         gap: 2
       }}>
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          Gestión de Entrenadores
+        Coach Management
+
           <Chip 
             label={`${trainers.length} registrados`} 
             color="primary" 
@@ -136,7 +137,7 @@ const TrainersPage = () => {
             sx={{ borderRadius: 3 }}
             onClick={() => setModalOpen(true)}
           >
-            Nuevo Entrenador
+            New Trainer
           </Button>
         </Box>
       </Box>
@@ -182,12 +183,6 @@ const TrainersPage = () => {
                 <Box>
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
                     {trainer.name}
-                    <Chip
-                      label={trainer.status === 'active' ? 'Activo' : 'Inactivo'}
-                      size="small"
-                      color={trainer.status === 'active' ? 'success' : 'error'}
-                      sx={{ ml: 1, fontSize: '0.75rem' }}
-                    />
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {trainer.email}
@@ -204,14 +199,10 @@ const TrainersPage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <FitnessCenter fontSize="small" color="action" />
                   <Typography variant="body2">
-                    Especialidad: {trainer.specialty}
+                    Specialty: {trainer.specialty}
                   </Typography>
                 </Box>
-                <Chip 
-                  label={`${trainer.activeClients} clientes`} 
-                  variant="outlined" 
-                  size="small"
-                />
+             
               </Box>
 
               <Box sx={{ 
@@ -239,13 +230,6 @@ const TrainersPage = () => {
                      />
                   </IconButton>
                 </Box>
-                <Button 
-                  variant="text" 
-                  size="small"
-                  onClick={() => router.push(`/trainers/${trainer.id}`)}
-                >
-                  Ver detalles
-                </Button>
               </Box>
             </Card>
           </Box>

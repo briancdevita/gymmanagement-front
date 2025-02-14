@@ -64,7 +64,7 @@ const ClientsPage = () => {
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d32f2f",
-      cancelButtonColor: "#6c757d",
+      cancelButtonColor: "#FF0000",
       confirmButtonText: "Delete",
       cancelButtonText: "Cancel",
     });
