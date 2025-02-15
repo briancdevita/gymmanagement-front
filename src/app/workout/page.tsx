@@ -28,10 +28,8 @@ const getStatusColor = (status: string) => {
   switch (status) {
     case 'ACTIVE':
       return "success.main";
-    case "CANCELLED":
+    case "EXPIRED":
       return "error.main";
-    case "PENDING":
-      return "warning.main";
     default:
       return "text.primary";
   }

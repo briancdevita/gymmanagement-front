@@ -31,8 +31,7 @@ interface AddEditClientModalProps {
 
 export const membershipStatusOptions: string[] = [
   "ACTIVE",
-  "PENDING",
-  "CANCELL"
+  "EXPIRED",
 ];
 
 const AddEditClientModal: React.FC<AddEditClientModalProps> = ({
@@ -48,15 +47,6 @@ const AddEditClientModal: React.FC<AddEditClientModalProps> = ({
     formState: { errors },
   } = useForm<Client>({
     mode: "onBlur",
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      birthDate: "",
-      membershipStatus: membershipStatusOptions[0], 
-      startDate: "",
-      endDate: "",
-    },
   });
 
   useEffect(() => {

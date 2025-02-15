@@ -42,9 +42,9 @@ interface WorkoutClassModalProps {
 }
 
 const statusOptions = [
-  { label: "PENDING", value: 0 },
-  { label: "CONFIRMED", value: 1 },
-  { label: "CANCELLED", value: 2 },
+  { label: "EXPIRED", value: 0 },
+  { label: "ACTIVE", value: 1 },
+
 ];
 
 const WorkoutClassModal: React.FC<WorkoutClassModalProps> = ({

@@ -14,7 +14,7 @@ export const fetchClients = async (): Promise<Client[]> => {
 
 
 export const updateClinet = async (client: Client): Promise<Client> => {
-
+  console.log(client)
   try {
     const response = await axiosInstance.put(`/clients/${client.id}`, client);
     return response.data;

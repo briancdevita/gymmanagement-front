@@ -10,7 +10,7 @@ import {
   Box,
   Typography,
   Button,
-  TextField,
+
   Chip,
   Avatar,
   IconButton,
@@ -32,6 +32,8 @@ import toast from "react-hot-toast";
 import { createClient, deleteClient, updateClinet } from "@/services/clientService";
 import Footer from "@/components/Footer";
 import { format } from "date-fns";
+import ClientFilter from "@/components/ClientFilter";
+import { SearchComponent } from "@/components/SearchComponent";
 
 const ClientsPage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -41,6 +43,31 @@ const ClientsPage = () => {
   const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+
+
+  const handleFilterChange = (search: string, status: string) => {
+    let filtered = clients;
+    if (search) {
+      filtered = filtered.filter(
+        (client) =>
+          client.firstName.toLowerCase().includes(search.toLowerCase()) ||
+          client.lastName.toLowerCase().includes(search.toLowerCase()) ||
+          client.email.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+    if (status !== "ALL") {
+      filtered = filtered.filter(
+        (client) => client.membershipStatus === status
+      );
+    }
+    setFilteredClients(filtered);
+  };
+
+
+
+
+
+
 
   useEffect(() => {
     dispatch(getClients());
@@ -64,7 +91,7 @@ const ClientsPage = () => {
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d32f2f",
-      cancelButtonColor: "#FF0000",
+      cancelButtonColor: "#6c757d",
       confirmButtonText: "Delete",
       cancelButtonText: "Cancel",
     });
@@ -95,7 +122,9 @@ const ClientsPage = () => {
 
   return (
     <>
+
     <DashboardLayout>
+      
       <Box sx={{ p: 4,  }}>
         <Box sx={{ 
           display: 'flex', 
@@ -105,10 +134,12 @@ const ClientsPage = () => {
           flexWrap: 'wrap',
           gap: 2
         }}>
+          
           <Box>
             <Typography variant="h4" fontWeight={700} gutterBottom>
               Client Management
             </Typography>
+           
             <Chip 
               label={`${filteredClients.length} clients found`}
               color="primary"
@@ -116,19 +147,13 @@ const ClientsPage = () => {
               size="small"
             />
           </Box>
+          <SearchComponent
+           search={search}
+           setSearch={setSearch}
+           />
           
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <TextField
-              variant="outlined"
-              placeholder="Search clients..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              InputProps={{
-                startAdornment: <Search sx={{ color: 'action.active', mr: 1 }} />,
-                sx: { borderRadius: 2 }
-              }}
-              size="small"
-            />
+           
             <Button
               variant="contained"
               startIcon={<PersonAdd />}
@@ -137,8 +162,11 @@ const ClientsPage = () => {
             >
               New Client
             </Button>
+            
           </Box>
         </Box>
+
+        
 
         {loading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
@@ -151,26 +179,30 @@ const ClientsPage = () => {
             <Typography color="error">{error}</Typography>
           </Box>
         )}
-
+         <ClientFilter onFilterChange={handleFilterChange} />
         <Paper sx={{ 
           borderRadius: 3,
           overflow: 'hidden',
           boxShadow: '0 4px 24px rgba(0,0,0,0.08)'
         }}>
+          
           <TableContainer>
             <Table>
               <TableHead sx={{ backgroundColor: 'primary.main' }}>
                 <TableRow>
                   <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Client</TableCell>
                   <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Email</TableCell>
-                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Membership</TableCell>
                   <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Start Date</TableCell>
                   <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>End Date</TableCell>
                   <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Status</TableCell>
                   <TableCell sx={{ color: 'common.white', fontWeight: 600 }} align="center">Actions</TableCell>
                 </TableRow>
+                
               </TableHead>
+           
+
               <TableBody>
+                
                 {filteredClients.map((client) => (
                   <TableRow 
                     key={client.id}
@@ -196,13 +228,7 @@ const ClientsPage = () => {
                       </Box>
                     </TableCell>
                     <TableCell>{client.email}</TableCell>
-                    <TableCell>
-                      <Chip 
-                        label={client.membershipType || 'Standard'} 
-                        size="small" 
-                        variant="outlined"
-                      />
-                    </TableCell>
+                  
                     <TableCell>{formatDate(client.startDate)}</TableCell>
                     <TableCell>{formatDate(client.endDate)}</TableCell>
                     <TableCell>
