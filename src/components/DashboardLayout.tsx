@@ -139,7 +139,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           <ListItem
             
             component="a"
-            href="/logout"
+            href="/"
             sx={{
               color: "#fff",
               borderRadius: 2,

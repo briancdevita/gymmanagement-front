@@ -4,7 +4,6 @@ export interface Client {
     firstName: string;
     lastName: string;
     email: string;
-    registrationDate: string;
     birthDate: string;
     membershipStatus: string;
     startDate: string;
