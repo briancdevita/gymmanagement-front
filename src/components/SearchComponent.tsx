@@ -2,7 +2,12 @@ import { Search } from '@mui/icons-material'
 import { TextField } from '@mui/material'
 import React from 'react'
 
-export const SearchComponent = ({search, setSearch}) => {
+interface SearchComponentProps {
+  search: string;
+  setSearch: (value: string) => void;
+}
+
+export const SearchComponent: React.FC<SearchComponentProps> = ({ search, setSearch }) => {
   return (
  
      <TextField

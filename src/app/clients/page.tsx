@@ -10,7 +10,6 @@ import {
   Box,
   Typography,
   Button,
-
   Chip,
   Avatar,
   IconButton,
@@ -24,7 +23,7 @@ import {
   Tooltip,
   CircularProgress,
 } from "@mui/material";
-import { Edit, Delete, Search, PersonAdd } from "@mui/icons-material";
+import { Edit, Delete, PersonAdd } from "@mui/icons-material";
 import DashboardLayout from "@/components/DashboardLayout";
 import Swal from "sweetalert2";
 import AddEditClientModal from "@/components/AddEditClientModal";
@@ -44,7 +43,6 @@ const ClientsPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
-
   const handleFilterChange = (search: string, status: string) => {
     let filtered = clients;
     if (search) {
@@ -62,12 +60,6 @@ const ClientsPage = () => {
     }
     setFilteredClients(filtered);
   };
-
-
-
-
-
-
 
   useEffect(() => {
     dispatch(getClients());
@@ -122,99 +114,136 @@ const ClientsPage = () => {
 
   return (
     <>
-
     <DashboardLayout>
-      
-      <Box sx={{ p: 4,  }}>
+
+      <Box sx={{ p: 4, maxWidth: 1440, mx: 'auto' }}>
+        {/* Header Section */}
         <Box sx={{ 
           display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 3,
           mb: 4,
-          flexWrap: 'wrap',
-          gap: 2
+          textAlign: 'center'
         }}>
-          
           <Box>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
+            <Typography variant="h3" fontWeight={700} gutterBottom sx={{ color: 'primary.main' }}>
               Client Management
             </Typography>
-           
-            <Chip 
-              label={`${filteredClients.length} clients found`}
-              color="primary"
-              variant="outlined"
-              size="small"
-            />
           </Box>
-          <SearchComponent
-           search={search}
-           setSearch={setSearch}
-           />
-          
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-           
+
+          {/* Search and Actions */}
+          <Box sx={{ 
+            width: '100%',
+            maxWidth: 800,
+            display: 'flex',
+            gap: 2,
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'center'
+          }}>
+            <SearchComponent
+              search={search}
+              setSearch={setSearch}
+              sx={{ flexGrow: 1, width: '100%' }}
+            />
             <Button
               variant="contained"
               startIcon={<PersonAdd />}
               onClick={() => setModalOpen(true)}
-              sx={{ borderRadius: 2 }}
+              sx={{ 
+                borderRadius: 2,
+                px: 4,
+                py: 1.5,
+                textTransform: 'none',
+                fontSize: 16,
+                whiteSpace: 'nowrap'
+              }}
             >
-              New Client
+              Add New Client
             </Button>
-            
           </Box>
         </Box>
 
-        
-
+        {/* Loading and Error States */}
         {loading && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-            <CircularProgress />
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            p: 4,
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            boxShadow: 1
+          }}>
+            <CircularProgress size={60} thickness={4} />
           </Box>
         )}
 
         {error && (
-          <Box sx={{ p: 2, backgroundColor: 'error.light', borderRadius: 2 }}>
-            <Typography color="error">{error}</Typography>
+          <Box sx={{ 
+            p: 3, 
+            bgcolor: 'error.light', 
+            borderRadius: 3,
+            mb: 3,
+            textAlign: 'center'
+          }}>
+            <Typography variant="h6" color="error">
+              {error}
+            </Typography>
           </Box>
         )}
-         <ClientFilter onFilterChange={handleFilterChange} />
+
+        {/* Filters */}
+        <ClientFilter onFilterChange={handleFilterChange} />
+
+        {/* Clients Table */}
         <Paper sx={{ 
           borderRadius: 3,
           overflow: 'hidden',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.08)'
+          boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+          border: '1px solid',
+          borderColor: 'divider'
         }}>
-          
-          <TableContainer>
-            <Table>
-              <TableHead sx={{ backgroundColor: 'primary.main' }}>
+          <TableContainer sx={{ maxHeight: 600 }}>
+            <Table stickyHeader size="small">
+              <TableHead sx={{ bgcolor: 'background.paper' }}>
                 <TableRow>
-                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Client</TableCell>
-                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Email</TableCell>
-                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Start Date</TableCell>
-                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>End Date</TableCell>
-                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }}>Status</TableCell>
-                  <TableCell sx={{ color: 'common.white', fontWeight: 600 }} align="center">Actions</TableCell>
+                  {['Client', 'Email', 'Start Date', 'End Date', 'Status', 'Actions'].map((header) => (
+                    <TableCell 
+                      key={header}
+                      sx={{ 
+                        bgcolor: 'primary.main',
+                        color: 'common.white',
+                        fontWeight: 600,
+                        fontSize: 15,
+                        py: 2,
+                        borderBottom: '2px solid',
+                        borderColor: 'divider'
+                      }}
+                    >
+                      {header}
+                    </TableCell>
+                  ))}
                 </TableRow>
-                
               </TableHead>
-           
 
               <TableBody>
-                
                 {filteredClients.map((client) => (
                   <TableRow 
                     key={client.id}
                     hover
                     sx={{ 
-                      '&:last-child td': { borderBottom: 0 },
-                      '&:hover': { backgroundColor: 'action.hover' }
+                      '&:nth-of-type(even)': { bgcolor: 'action.hover' },
+                      '&:hover': { bgcolor: 'action.selected' }
                     }}
                   >
-                    <TableCell>
+                    <TableCell sx={{ py: 2 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Avatar sx={{ bgcolor: 'primary.main' }}>
+                        <Avatar sx={{ 
+                          bgcolor: 'primary.main', 
+                          width: 40, 
+                          height: 40,
+                          fontSize: 16 
+                        }}>
                           {client.firstName[0]}{client.lastName[0]}
                         </Avatar>
                         <Box>
@@ -222,27 +251,27 @@ const ClientsPage = () => {
                             {client.firstName} {client.lastName}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            {formatDate(client.birthDate)}
+                            Born: {formatDate(client.birthDate)}
                           </Typography>
                         </Box>
                       </Box>
                     </TableCell>
-                    <TableCell>{client.email}</TableCell>
-                  
-                    <TableCell>{formatDate(client.startDate)}</TableCell>
-                    <TableCell>{formatDate(client.endDate)}</TableCell>
-                    <TableCell>
+                    <TableCell sx={{ py: 2 }}>{client.email}</TableCell>
+                    <TableCell sx={{ py: 2 }}>{formatDate(client.startDate)}</TableCell>
+                    <TableCell sx={{ py: 2 }}>{formatDate(client.endDate)}</TableCell>
+                    <TableCell sx={{ py: 2 }}>
                       <Chip
                         label={client.membershipStatus}
                         color={client.membershipStatus === "ACTIVE" ? "success" : "error"}
                         sx={{ 
                           borderRadius: 1,
-                          fontWeight: 500,
-                          textTransform: 'uppercase'
+                          fontWeight: 600,
+                          textTransform: 'uppercase',
+                          width: 90
                         }}
                       />
                     </TableCell>
-                    <TableCell align="center">
+                    <TableCell align="center" sx={{ py: 2 }}>
                       <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                         <Tooltip title="Edit">
                           <IconButton
@@ -250,6 +279,10 @@ const ClientsPage = () => {
                             onClick={() => {
                               setSelectedClient(client);
                               setModalOpen(true);
+                            }}
+                            sx={{
+                              bgcolor: 'primary.light',
+                              '&:hover': { bgcolor: 'primary.main', color: 'white' }
                             }}
                           >
                             <Edit fontSize="small" />
@@ -259,6 +292,10 @@ const ClientsPage = () => {
                           <IconButton
                             color="error"
                             onClick={() => handleDeleteClient(client.id)}
+                            sx={{
+                              bgcolor: 'error.light',
+                              '&:hover': { bgcolor: 'error.main', color: 'white' }
+                            }}
                           >
                             <Delete fontSize="small" />
                           </IconButton>
@@ -282,9 +319,8 @@ const ClientsPage = () => {
           onSave={handleSaveClient}
         />
       </Box>
-     
     </DashboardLayout>
-    <Footer />
+      <Footer />
     </>
   );
 };

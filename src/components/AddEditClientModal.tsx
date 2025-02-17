@@ -229,8 +229,8 @@ const AddEditClientModal: React.FC<AddEditClientModalProps> = ({
           <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
             <Button
               onClick={onClose}
-              variant="outlined"
-              color="secondary"
+              variant="contained"
+              color="error"
               sx={{ borderRadius: 2, px: 4 }}
             >
               Cancel
